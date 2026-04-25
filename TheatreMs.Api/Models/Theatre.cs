@@ -22,6 +22,21 @@ public class Theatre
     [MaxLength(500)]
     public string? Description { get; set; }
 
+    [Required, MaxLength(50)]
+    public string Province { get; set; } = string.Empty;
+
+    [Required, MaxLength(50)]
+    public string District { get; set; } = string.Empty;
+
+    [Required, MaxLength(50)]
+    public string Sector { get; set; } = string.Empty;
+
+    [Required, MaxLength(50)]
+    public string Cell { get; set; } = string.Empty;
+
+    [Required, MaxLength(50)]
+    public string Village { get; set; } = string.Empty;
+
     public int? TotalScreens { get; set; }
 
     [Column(TypeName = "nvarchar(max)")]

@@ -133,12 +133,26 @@ public class ScreeningService(AppDbContext db) : IScreeningService
     public async Task<ScreeningDto> CreateAsync(ScreeningDto dto)
     {
         var movie = await db.Movies.FindAsync(dto.MovieId) ?? throw new KeyNotFoundException("Movie not found");
+        var startTime = dto.StartTime!.Value;
+        var endTime = startTime.AddMinutes(movie.DurationMinutes);
+
+        // Check for overlaps in the same room
+        var overlap = await db.Screenings.AnyAsync(s => 
+            s.TheatreId == dto.TheatreId && 
+            s.ScreenNumber == dto.ScreenNumber &&
+            ((startTime >= s.StartTime && startTime < s.EndTime) || 
+             (endTime > s.StartTime && endTime <= s.EndTime) ||
+             (startTime <= s.StartTime && endTime >= s.EndTime)));
+
+        if (overlap)
+            throw new InvalidOperationException("This screen is already booked for another show during this time slot.");
+
         var screening = new Screening
         {
             MovieId = dto.MovieId!.Value, TheatreId = dto.TheatreId!.Value,
-            StartTime = dto.StartTime!.Value, ScreenNumber = dto.ScreenNumber!.Value,
+            StartTime = startTime, ScreenNumber = dto.ScreenNumber!.Value,
             Format = dto.Format ?? ScreeningFormat.STANDARD, BasePrice = dto.BasePrice ?? 0,
-            EndTime = dto.StartTime.Value.AddMinutes(movie.DurationMinutes)
+            EndTime = endTime
         };
         db.Screenings.Add(screening);
         await db.SaveChangesAsync();
@@ -151,14 +165,32 @@ public class ScreeningService(AppDbContext db) : IScreeningService
     {
         var screening = await db.Screenings.Include(s => s.Movie).Include(s => s.Theatre)
             .FirstOrDefaultAsync(s => s.Id == id) ?? throw new KeyNotFoundException("Screening not found");
+        
+        var startTime = dto.StartTime ?? screening.StartTime;
+        var screenNumber = dto.ScreenNumber ?? screening.ScreenNumber;
+        var theatreId = dto.TheatreId ?? screening.TheatreId;
+        var endTime = startTime.AddMinutes(screening.Movie.DurationMinutes);
+
+        // Check for overlaps (excluding self)
+        var overlap = await db.Screenings.AnyAsync(s => 
+            s.Id != id &&
+            s.TheatreId == theatreId && 
+            s.ScreenNumber == screenNumber &&
+            ((startTime >= s.StartTime && startTime < s.EndTime) || 
+             (endTime > s.StartTime && endTime <= s.EndTime) ||
+             (startTime <= s.StartTime && endTime >= s.EndTime)));
+
+        if (overlap)
+            throw new InvalidOperationException("Overlap detected: the screen is taken during this time.");
+
         if (dto.MovieId.HasValue) screening.MovieId = dto.MovieId.Value;
         if (dto.TheatreId.HasValue) screening.TheatreId = dto.TheatreId.Value;
-        if (dto.StartTime.HasValue) screening.StartTime = dto.StartTime.Value;
-        if (dto.ScreenNumber.HasValue) screening.ScreenNumber = dto.ScreenNumber.Value;
+        screening.StartTime = startTime;
+        screening.ScreenNumber = screenNumber;
         if (dto.Format.HasValue) screening.Format = dto.Format.Value;
         if (dto.BasePrice.HasValue) screening.BasePrice = dto.BasePrice.Value;
-        if (dto.StartTime.HasValue)
-            screening.EndTime = dto.StartTime.Value.AddMinutes(screening.Movie.DurationMinutes);
+        screening.EndTime = endTime;
+
         await db.SaveChangesAsync();
         return MapToDto(screening);
     }

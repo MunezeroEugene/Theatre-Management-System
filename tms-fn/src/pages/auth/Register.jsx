@@ -18,6 +18,7 @@ const RegisterPage = () => {
     register, 
     handleSubmit, 
     watch,
+    setError,
     formState: { errors }
   } = useForm();
   
@@ -30,15 +31,26 @@ const RegisterPage = () => {
     
     try {
       // Register user
-      const success = await registerUser(data);
+      const result = await registerUser(data);
       
-      if (success) {
+      if (result.success) {
         // Registration successful
         showSuccess('Registration successful! Please login.');
         navigate('/login');
       } else {
         // Registration failed
-        showError('Registration failed. Please try again.');
+        if (result.errors) {
+          // Map backend errors to fields
+          Object.keys(result.errors).forEach(key => {
+            // Convert C# property Case to JS camelCase if needed, 
+            // though our API standardizes this via JsonSerializerOptions
+            const fieldName = key.charAt(0).toLowerCase() + key.slice(1);
+            setError(fieldName, { type: 'server', message: result.errors[key] });
+          });
+          showError('Please correct the highlighted errors.');
+        } else {
+          showError(result.error || 'Registration failed. Please try again.');
+        }
       }
     } catch (error) {
       showError(error.message || 'Registration failed. Please try again.');

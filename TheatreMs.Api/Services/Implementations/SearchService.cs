@@ -27,7 +27,7 @@ public class SearchService(AppDbContext db) : ISearchService
     public async Task<Dictionary<string, object>> SearchTheatresAsync(string query, int limit)
     {
         var results = await db.Theatres
-            .Where(t => t.Name.Contains(query) || t.Address.Contains(query))
+            .Where(t => t.Name.Contains(query) || t.Address.Contains(query) || t.Province.Contains(query) || t.District.Contains(query) || t.Sector.Contains(query))
             .Take(limit)
             .Select(t => new { t.Id, t.Name, t.Address, t.PhoneNumber })
             .ToListAsync();

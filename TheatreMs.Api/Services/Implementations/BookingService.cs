@@ -37,55 +37,65 @@ public class BookingService(AppDbContext db, IEmailService emailService) : IBook
         if (dto.ScreeningId == null || dto.BookedSeats == null || !dto.BookedSeats.Any())
             throw new InvalidOperationException("Screening and seats are required");
 
-        var screening = await db.Screenings.Include(s => s.Movie).Include(s => s.Theatre)
-            .FirstOrDefaultAsync(s => s.Id == dto.ScreeningId)
-            ?? throw new KeyNotFoundException("Screening not found");
-
-        // Check seat availability — load bookings first, then flatten in memory
-        var existingBookings = await db.Bookings
-            .Where(b => b.ScreeningId == dto.ScreeningId
-                && b.PaymentStatus != PaymentStatus.CANCELLED
-                && b.PaymentStatus != PaymentStatus.REFUNDED)
-            .ToListAsync();
-        var alreadyBooked = existingBookings.SelectMany(b => b.BookedSeats).ToHashSet();
-
-        var conflicts = dto.BookedSeats.Intersect(alreadyBooked).ToList();
-        if (conflicts.Any())
-            throw new InvalidOperationException($"Seats already booked: {string.Join(", ", conflicts)}");
-
-        // Calculate price
-        double totalAmount = 0;
-        foreach (var seatLabel in dto.BookedSeats)
+        using var transaction = await db.Database.BeginTransactionAsync();
+        try
         {
-            var rowName = new string(seatLabel.TakeWhile(char.IsLetter).ToArray());
-            var seat = await db.Seats.FirstOrDefaultAsync(s =>
-                s.TheatreId == screening.TheatreId && s.ScreenNumber == screening.ScreenNumber && s.RowName == rowName);
-            totalAmount += screening.BasePrice * (seat?.PriceMultiplier ?? 1.0);
+            var screening = await db.Screenings.Include(s => s.Movie).Include(s => s.Theatre)
+                .FirstOrDefaultAsync(s => s.Id == dto.ScreeningId)
+                ?? throw new KeyNotFoundException("Screening not found");
+
+            // Check seat availability — load bookings first
+            var existingBookings = await db.Bookings
+                .Where(b => b.ScreeningId == dto.ScreeningId
+                    && b.PaymentStatus != PaymentStatus.CANCELLED
+                    && b.PaymentStatus != PaymentStatus.REFUNDED)
+                .ToListAsync();
+            var alreadyBooked = existingBookings.SelectMany(b => b.BookedSeats).ToHashSet();
+
+            var conflicts = dto.BookedSeats.Intersect(alreadyBooked).ToList();
+            if (conflicts.Any())
+                throw new InvalidOperationException($"Seats already booked: {string.Join(", ", conflicts)}");
+
+            // Calculate price
+            double totalAmount = 0;
+            foreach (var seatLabel in dto.BookedSeats)
+            {
+                var rowName = new string(seatLabel.TakeWhile(char.IsLetter).ToArray());
+                var seat = await db.Seats.FirstOrDefaultAsync(s =>
+                    s.TheatreId == screening.TheatreId && s.ScreenNumber == screening.ScreenNumber && s.RowName == rowName);
+                totalAmount += screening.BasePrice * (seat?.PriceMultiplier ?? 1.0);
+            }
+
+            var booking = new Booking
+            {
+                UserId = userId,
+                ScreeningId = dto.ScreeningId.Value,
+                BookingNumber = "BK" + DateTime.UtcNow.Ticks.ToString()[^8..],
+                BookingTime = DateTime.UtcNow,
+                TotalAmount = totalAmount,
+                PaymentStatus = PaymentStatus.COMPLETED,
+                PaymentMethod = dto.PaymentMethod ?? "CARD",
+                BookedSeats = dto.BookedSeats
+            };
+
+            db.Bookings.Add(booking);
+            await db.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            var user = await db.Users.FindAsync(userId);
+            if (user != null)
+                await emailService.SendBookingConfirmationAsync(user.Email, booking.BookingNumber,
+                    screening.Movie.Title, screening.StartTime);
+
+            await db.Entry(booking).Reference(b => b.User).LoadAsync();
+            await db.Entry(booking).Reference(b => b.Screening).LoadAsync();
+            return MapToDto(booking);
         }
-
-        var booking = new Booking
+        catch (Exception)
         {
-            UserId = userId,
-            ScreeningId = dto.ScreeningId.Value,
-            BookingNumber = "BK" + DateTime.UtcNow.Ticks.ToString()[^8..],
-            BookingTime = DateTime.UtcNow,
-            TotalAmount = totalAmount,
-            PaymentStatus = PaymentStatus.COMPLETED,
-            PaymentMethod = dto.PaymentMethod ?? "CARD",
-            BookedSeats = dto.BookedSeats
-        };
-
-        db.Bookings.Add(booking);
-        await db.SaveChangesAsync();
-
-        var user = await db.Users.FindAsync(userId);
-        if (user != null)
-            await emailService.SendBookingConfirmationAsync(user.Email, booking.BookingNumber,
-                screening.Movie.Title, screening.StartTime);
-
-        await db.Entry(booking).Reference(b => b.User).LoadAsync();
-        await db.Entry(booking).Reference(b => b.Screening).LoadAsync();
-        return MapToDto(booking);
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task CancelBookingAsync(long id, long userId, bool isAdmin)

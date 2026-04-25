@@ -110,6 +110,7 @@ apiClient.interceptors.response.use(
     return Promise.reject({
       status: response?.status,
       message: response?.data?.message || error.message || 'An unexpected error occurred',
+      errors: response?.data?.errors, // Pass through validation errors
       ...error
     });
   }

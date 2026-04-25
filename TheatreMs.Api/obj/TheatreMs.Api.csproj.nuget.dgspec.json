@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\tms\\TheatreMs.Api\\TheatreMs.Api.csproj": {}
+    "D:\\studies\\DOT NET\\assignments\\Theatre-Management-System\\TheatreMs.Api\\TheatreMs.Api.csproj": {}
   },
   "projects": {
-    "D:\\tms\\TheatreMs.Api\\TheatreMs.Api.csproj": {
+    "D:\\studies\\DOT NET\\assignments\\Theatre-Management-System\\TheatreMs.Api\\TheatreMs.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\tms\\TheatreMs.Api\\TheatreMs.Api.csproj",
+        "projectUniqueName": "D:\\studies\\DOT NET\\assignments\\Theatre-Management-System\\TheatreMs.Api\\TheatreMs.Api.csproj",
         "projectName": "TheatreMs.Api",
-        "projectPath": "D:\\tms\\TheatreMs.Api\\TheatreMs.Api.csproj",
-        "packagesPath": "C:\\Users\\YES TECHNOLOGY LTD\\.nuget\\packages\\",
-        "outputPath": "D:\\tms\\TheatreMs.Api\\obj\\",
+        "projectPath": "D:\\studies\\DOT NET\\assignments\\Theatre-Management-System\\TheatreMs.Api\\TheatreMs.Api.csproj",
+        "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+        "outputPath": "D:\\studies\\DOT NET\\assignments\\Theatre-Management-System\\TheatreMs.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\YES TECHNOLOGY LTD\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -30,7 +30,6 @@
         },
         "frameworks": {
           "net10.0": {
-            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {}
           }
@@ -49,7 +48,6 @@
       },
       "frameworks": {
         "net10.0": {
-          "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
             "BCrypt.Net-Next": {
@@ -98,7 +96,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

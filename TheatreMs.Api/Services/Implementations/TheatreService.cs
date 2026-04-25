@@ -29,6 +29,8 @@ public class TheatreService(AppDbContext db) : ITheatreService
         {
             Name = dto.Name!, Address = dto.Address!, PhoneNumber = dto.PhoneNumber,
             Email = dto.Email, Description = dto.Description,
+            Province = dto.Province, District = dto.District, Sector = dto.Sector,
+            Cell = dto.Cell, Village = dto.Village,
             TotalScreens = dto.TotalScreens, ImageUrl = dto.ImageUrl
         };
         db.Theatres.Add(theatre);
@@ -44,6 +46,11 @@ public class TheatreService(AppDbContext db) : ITheatreService
         if (dto.PhoneNumber != null) theatre.PhoneNumber = dto.PhoneNumber;
         if (dto.Email != null) theatre.Email = dto.Email;
         if (dto.Description != null) theatre.Description = dto.Description;
+        if (dto.Province != null) theatre.Province = dto.Province;
+        if (dto.District != null) theatre.District = dto.District;
+        if (dto.Sector != null) theatre.Sector = dto.Sector;
+        if (dto.Cell != null) theatre.Cell = dto.Cell;
+        if (dto.Village != null) theatre.Village = dto.Village;
         if (dto.TotalScreens.HasValue) theatre.TotalScreens = dto.TotalScreens;
         if (dto.ImageUrl != null) theatre.ImageUrl = dto.ImageUrl;
         await db.SaveChangesAsync();
@@ -111,6 +118,9 @@ public class TheatreService(AppDbContext db) : ITheatreService
     public static TheatreDto MapToDto(Theatre t) => new()
     {
         Id = t.Id, Name = t.Name, Address = t.Address, PhoneNumber = t.PhoneNumber,
-        Email = t.Email, Description = t.Description, TotalScreens = t.TotalScreens, ImageUrl = t.ImageUrl
+        Email = t.Email, Description = t.Description, 
+        Province = t.Province, District = t.District, Sector = t.Sector,
+        Cell = t.Cell, Village = t.Village,
+        TotalScreens = t.TotalScreens, ImageUrl = t.ImageUrl
     };
 }

@@ -197,7 +197,7 @@ export const AuthProvider = ({ children }) => {
   /**
    * Register a new user
    * @param {Object} userData - User registration data
-   * @returns {Promise<boolean>} Registration success status
+   * @returns {Promise<Object>} Registration result { success, error, errors }
    */
   const register = useCallback(async (userData) => {
     setLoading(true);
@@ -205,11 +205,16 @@ export const AuthProvider = ({ children }) => {
     
     try {
       await authApi.register(userData);
-      return true;
+      return { success: true };
     } catch (err) {
       console.error('Registration error:', err);
-      setError(err.message || 'Registration failed');
-      return false;
+      const errorMsg = err.message || 'Registration failed';
+      setError(errorMsg);
+      return { 
+        success: false, 
+        error: errorMsg,
+        errors: err.errors // Pass through the validation errors dictionary
+      };
     } finally {
       setLoading(false);
     }

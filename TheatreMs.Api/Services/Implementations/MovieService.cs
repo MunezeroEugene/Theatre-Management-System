@@ -102,7 +102,7 @@ public class MovieService(AppDbContext db) : IMovieService
     {
         var movie = new Movie
         {
-            Title = dto.Title!,
+            Title = dto.Title,
             Description = dto.Description,
             DurationMinutes = dto.DurationMinutes ?? 0,
             Genre = dto.Genre,
@@ -121,16 +121,17 @@ public class MovieService(AppDbContext db) : IMovieService
     public async Task<MovieDto> UpdateAsync(long id, MovieDto dto)
     {
         var movie = await db.Movies.FindAsync(id) ?? throw new KeyNotFoundException("Movie not found");
-        if (dto.Title != null) movie.Title = dto.Title;
-        if (dto.Description != null) movie.Description = dto.Description;
+        movie.Title = dto.Title;
+        movie.Description = dto.Description;
         if (dto.DurationMinutes.HasValue) movie.DurationMinutes = dto.DurationMinutes.Value;
-        if (dto.Genre.HasValue) movie.Genre = dto.Genre;
-        if (dto.Director != null) movie.Director = dto.Director;
-        if (dto.Cast != null) movie.Cast = dto.Cast;
-        if (dto.ReleaseDate.HasValue) movie.ReleaseDate = dto.ReleaseDate;
-        if (dto.PosterImageUrl != null) movie.PosterImageUrl = dto.PosterImageUrl;
-        if (dto.TrailerUrl != null) movie.TrailerUrl = dto.TrailerUrl;
-        if (dto.Rating.HasValue) movie.Rating = dto.Rating;
+        movie.Genre = dto.Genre;
+        movie.Director = dto.Director;
+        movie.Cast = dto.Cast;
+        movie.ReleaseDate = dto.ReleaseDate;
+        movie.PosterImageUrl = dto.PosterImageUrl;
+        movie.TrailerUrl = dto.TrailerUrl;
+        movie.Rating = dto.Rating;
+        
         await db.SaveChangesAsync();
         return MapToDto(movie);
     }
@@ -154,10 +155,17 @@ public class MovieService(AppDbContext db) : IMovieService
 
     public static MovieDto MapToDto(Movie m) => new()
     {
-        Id = m.Id, Title = m.Title, Description = m.Description,
-        DurationMinutes = m.DurationMinutes, Genre = m.Genre, Director = m.Director,
-        Cast = m.Cast, ReleaseDate = m.ReleaseDate, PosterImageUrl = m.PosterImageUrl,
-        TrailerUrl = m.TrailerUrl, Rating = m.Rating
+        Id = m.Id, 
+        Title = m.Title, 
+        Description = m.Description ?? string.Empty,
+        DurationMinutes = m.DurationMinutes, 
+        Genre = m.Genre, 
+        Director = m.Director ?? string.Empty,
+        Cast = m.Cast ?? string.Empty, 
+        ReleaseDate = m.ReleaseDate, 
+        PosterImageUrl = m.PosterImageUrl ?? string.Empty,
+        TrailerUrl = m.TrailerUrl, 
+        Rating = m.Rating
     };
 
     private static ScreeningDto MapScreeningToDto(Screening s) => new()

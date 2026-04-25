@@ -21,6 +21,21 @@ public class TheatreDto
     [MaxLength(500)]
     public string? Description { get; set; }
 
+    [Required(ErrorMessage = "Province is required"), MaxLength(50)]
+    public string Province { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "District is required"), MaxLength(50)]
+    public string District { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Sector is required"), MaxLength(50)]
+    public string Sector { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Cell is required"), MaxLength(50)]
+    public string Cell { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Village is required"), MaxLength(50)]
+    public string Village { get; set; } = string.Empty;
+
     public int? TotalScreens { get; set; }
     public string? ImageUrl { get; set; }
 }

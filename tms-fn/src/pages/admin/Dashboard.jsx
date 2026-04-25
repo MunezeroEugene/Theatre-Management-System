@@ -476,8 +476,8 @@ return (
           <BarChart data={revenueByMovie} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `$${v}`} />
-            <Tooltip formatter={v => [`$${v}`, 'Revenue']} />
+            <YAxis tick={{ fontSize: 11 }} tickFormatter={v => formatCurrency(v)} />
+            <Tooltip formatter={v => [formatCurrency(v), 'Revenue']} />
             <Bar dataKey="revenue" fill="#10b981" radius={[4, 4, 0, 0]} name="Revenue ($)" />
           </BarChart>
         </ResponsiveContainer>

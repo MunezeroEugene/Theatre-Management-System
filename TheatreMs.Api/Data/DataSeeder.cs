@@ -158,8 +158,9 @@ public static class DataSeeder
         {
             Name = "Grand Cinema",
             Address = "123 Main Street, City Center",
-            PhoneNumber = "+1-555-0100",
-            Email = "info@grandcinema.com",
+            Province = "Kigali City", District = "Nyarugenge", Sector = "Nyarugenge", Cell = "Kiyovu", Village = "Ubumwe",
+            PhoneNumber = "+250-788-001-001",
+            Email = "info@grandcinema.rw",
             Description = "Premium cinema experience with state-of-the-art screens and Dolby Atmos sound.",
             TotalScreens = 3,
             ImageUrl = "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=600"
@@ -169,8 +170,9 @@ public static class DataSeeder
         {
             Name = "Starlight Multiplex",
             Address = "456 Sunset Boulevard, Westside",
-            PhoneNumber = "+1-555-0200",
-            Email = "info@starlightmultiplex.com",
+            Province = "Kigali City", District = "Gasabo", Sector = "Kimironko", Cell = "Kibagabaga", Village = "Nyagatovu",
+            PhoneNumber = "+250-788-002-002",
+            Email = "info@starlightmultiplex.rw",
             Description = "The largest multiplex in the region featuring IMAX and 4DX screens.",
             TotalScreens = 4,
             ImageUrl = "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600"
