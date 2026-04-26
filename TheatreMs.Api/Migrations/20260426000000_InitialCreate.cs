@@ -1,16 +1,32 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace TheatreMs.Api.Migrations
 {
-    /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AuditLogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Resource = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuditLogs", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Movies",
                 columns: table => new
@@ -60,6 +76,11 @@ namespace TheatreMs.Api.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Province = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    District = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Sector = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Cell = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Village = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     TotalScreens = table.Column<int>(type: "int", nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -212,29 +233,16 @@ namespace TheatreMs.Api.Migrations
                 unique: true);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Bookings");
-
-            migrationBuilder.DropTable(
-                name: "PasswordResetTokens");
-
-            migrationBuilder.DropTable(
-                name: "Seats");
-
-            migrationBuilder.DropTable(
-                name: "Screenings");
-
-            migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "Movies");
-
-            migrationBuilder.DropTable(
-                name: "Theatres");
+            migrationBuilder.DropTable(name: "AuditLogs");
+            migrationBuilder.DropTable(name: "Bookings");
+            migrationBuilder.DropTable(name: "PasswordResetTokens");
+            migrationBuilder.DropTable(name: "Seats");
+            migrationBuilder.DropTable(name: "Screenings");
+            migrationBuilder.DropTable(name: "Users");
+            migrationBuilder.DropTable(name: "Movies");
+            migrationBuilder.DropTable(name: "Theatres");
         }
     }
 }
