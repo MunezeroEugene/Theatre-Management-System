@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TheatreMs.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e9da6e9c3b6ea798ec0d45be0080124ff22087ae")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f93535290a13b7d325dbc0f3667118cd6ebc53ff")]
 [assembly: System.Reflection.AssemblyProductAttribute("TheatreMs.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TheatreMs.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
